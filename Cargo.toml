@@ -2,7 +2,7 @@
 name = "termgame"
 description = "Develop terminal-based games using tui-rs and crossterm"
 license = "MIT OR Apache-2.0"
-version = "1.0.0"
+version = "1.0.1"
 edition = "2021"
 authors = ["Tom Kunc <t.kunc@unsw.edu.au>", "Zac Kologlu", "Shrey Somaiya"]
 documentation = "https://docs.rs/termgame"
