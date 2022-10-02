@@ -10,7 +10,7 @@
 //! It also wraps many tui features, like [`StyledCharacter`],
 //! [`GameEvent`], and [`Style`]
 //!
-//! ```rust
+//! ```rust,no_run
 //!
 //! use termgame::{SimpleEvent, Controller, Game, GameEvent, StyledCharacter, run_game, KeyCode};
 //! use std::error::Error;
@@ -38,7 +38,13 @@
 //! fn main() -> Result<(), Box<dyn Error>> {
 //!     let mut controller = MyGame {};
 //!
-//!     // run_game(&mut controller, Duration::from_millis(500))?;
+//!     run_game(
+//!         &mut controller,
+//!         GameSettings::new()
+//!             // The below are the defaults, but shown so you can edit them.
+//!             .tick_duration(Duration::from_millis(50))
+//!             .quit_event(Some(SimpleEvent::WithControl(KeyCode::Char('c')).into()))
+//!     )?;
 //!
 //!     println!("Game Ended!");
 //!
