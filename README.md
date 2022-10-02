@@ -1,5 +1,3 @@
-[![Workflow Status](https://github.com/COMP6991UNSW/termgame/workflows/main/badge.svg)](https://github.com/COMP6991UNSW/termgame/actions?query=workflow%3A%22main%22)
-
 # termgame
 
 TermGame is a small crate that extends tui-rs to make it easy
