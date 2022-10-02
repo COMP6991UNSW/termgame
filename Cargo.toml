@@ -1,0 +1,18 @@
+[package]
+name = "termgame"
+description = "Develop terminal-based games using tui-rs and crossterm"
+license = "MIT OR Apache-2.0"
+version = "1.0.0"
+edition = "2021"
+authors = "Tom Kunc <t.kunc@unsw.edu.au>, Zac Kologlu, Shrey Somaiya"
+documentation = "https://docs.rs/termgame"
+homepage = "https://github.com/COMP6991UNSW/termgame"
+repository = "https://github.com/COMP6991UNSW/termgame"
+
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+tui = "0.19.0"
+crossterm = "0.25.0"
+divrem = "1.0.0"
