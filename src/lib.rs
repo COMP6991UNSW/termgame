@@ -10,9 +10,9 @@
 //! It also wraps many tui features, like [`StyledCharacter`],
 //! [`GameEvent`], and [`Style`]
 //!
-//! ```rust,no_run
+//! ```no_run
 //!
-//! use termgame::{SimpleEvent, Controller, Game, GameEvent, StyledCharacter, run_game, KeyCode};
+//! use termgame::{SimpleEvent, Controller, Game, GameEvent, GameSettings, StyledCharacter, run_game, KeyCode};
 //! use std::error::Error;
 //! use std::time::Duration;
 //!
