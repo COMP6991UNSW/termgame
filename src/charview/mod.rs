@@ -11,7 +11,7 @@ pub mod screen_character;
 
 use super::charview::{chunkmap::ChunkMap, screen_character::ScreenCharacter};
 
-/// This is a [`ChunkMap`] (an infinite 2D map) of `ScreenCharacter`s
+/// This is a [`ChunkMap`] (an infinite 2D map) of [`ScreenCharacter`]s
 pub type CharChunkMap = ChunkMap<ScreenCharacter>;
 
 /// The [`ViewportLocation`] describes the top-left
