@@ -6,7 +6,7 @@ use super::game::{Game, GameEvent};
 /// in order to control a Termgame Game.
 ///
 /// Each of the event-handlers (i.e. functions) will be called as they
-/// are descrbed, and passed a [`Game`] trait object; which gives you
+/// are described, and passed a [`Game`] trait object; which gives you
 /// functions to control the game.
 pub trait Controller {
     /// This event-handler is called just before any other event-handlers.
