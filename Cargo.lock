@@ -170,7 +170,7 @@ checksum = "2fd0db749597d91ff862fd1d55ea87f7855a744a8425a64695b6fca237d1dad1"
 
 [[package]]
 name = "termgame"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "crossterm",
  "divrem",

@@ -11,7 +11,16 @@ pub mod screen_character;
 
 use super::charview::{chunkmap::ChunkMap, screen_character::ScreenCharacter};
 
-/// This is a [`ChunkMap`] (an infinite 2D map) of [`ScreenCharacter`]s
+/// This is a [`ChunkMap`] (an infinite 2D map) of the internal representation
+/// of characters.
+///
+/// Note that `ScreenCharacter` is a type that uses types from
+/// the `crossterm` library, so we have not exposed it to reduce confusion.
+/// If you feel that you need to create a `ScreenCharacter`,
+/// you may be misunderstanding the code -- make sure to
+/// reach out and ask us.
+///
+/// Use the [`crate::StyledCharacter`] for interacting with the `GameType` instead.
 pub type CharChunkMap = ChunkMap<ScreenCharacter>;
 
 /// The [`ViewportLocation`] describes the top-left

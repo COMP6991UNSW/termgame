@@ -8,7 +8,7 @@
 //! TUI (provided by tui-rs).
 //!
 //! It also wraps many tui features, like [`StyledCharacter`],
-//! [`GameEvent`], and [`Style`]
+//! [`GameEvent`], and [`GameStyle`]
 //!
 //! ```no_run
 //!

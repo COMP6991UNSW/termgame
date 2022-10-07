@@ -19,13 +19,14 @@ pub use super::{Message, SCREEN_HEIGHT, SCREEN_WIDTH};
 ///                       .background_color(Some(GameColor::Red))
 ///                       .font(Some(Font::BOLD | Font::UNDERLINED));
 /// ```
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Style {
     /// The color of the text.
-    color: Option<GameColor>,
+    pub color: Option<GameColor>,
     /// The color of the background.
-    background_color: Option<GameColor>,
-    // See [`Font`] for details, it decides bold/italic/underline/etc.
-    font: Option<Font>,
+    pub background_color: Option<GameColor>,
+    /// See [`Font`] for details, it decides bold/italic/underline/etc.
+    pub font: Option<Font>,
 }
 
 impl Style {
@@ -63,9 +64,12 @@ impl Style {
 /// StyledCharacter::new('x')
 ///                  .style(GameStyle::new().background_color(Some(GameColor::Black)));
 /// ```
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct StyledCharacter {
-    c: char,
-    style: Option<Style>,
+    /// This is the actual character that will be displayed on screen.
+    pub c: char,
+    /// This is the [`Style`] that will be used when displaying on screen.
+    pub style: Option<Style>,
 }
 
 impl StyledCharacter {
