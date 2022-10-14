@@ -85,7 +85,6 @@ impl StyledCharacter {
     }
 
     /// Set the style.
-    /// Set the style.
     pub fn style(mut self, s: Style) -> Self {
         self.style = Some(s);
         self
