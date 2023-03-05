@@ -3,6 +3,12 @@
 version = 3
 
 [[package]]
+name = "array-macro"
+version = "2.1.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "457661fa6716c30b73d7c41400a8a78780d20523b83a9441dabec28e93f27cf4"
+
+[[package]]
 name = "autocfg"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -172,6 +178,7 @@ checksum = "2fd0db749597d91ff862fd1d55ea87f7855a744a8425a64695b6fca237d1dad1"
 name = "termgame"
 version = "1.1.0"
 dependencies = [
+ "array-macro",
  "crossterm",
  "divrem",
  "tui",
