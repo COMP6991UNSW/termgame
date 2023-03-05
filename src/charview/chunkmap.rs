@@ -50,7 +50,7 @@ impl ChunkCoordinate {
 /// and individual elements are accessed by finding the address
 /// of their chunk, then getting them by offset.
 #[derive(Debug, Clone)]
-pub struct ChunkMap<T: Copy> {
+pub struct ChunkMap<T> {
     map: HashMap<ChunkCoordinate, Chunk<Option<T>>>,
 }
 
