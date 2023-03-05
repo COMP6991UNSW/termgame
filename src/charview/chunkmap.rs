@@ -139,8 +139,8 @@ mod tests {
         let mut c = ChunkMap::<String>::new();
         c.insert(3, 3, String::from("It is hardware that makes a machine fast"));
         assert_eq!(c.get(3, 3), Some(&String::from("It is hardware that makes a machine fast")));
-        c.insert(103, 103, String::from("It's sofware that makes a fast machine slow"));
-        assert_eq!(c.get(103, 103), Some(&String::from("It's sofware that makes a fast machine slow")));
+        c.insert(103, 103, String::from("It's software that makes a fast machine slow"));
+        assert_eq!(c.get(103, 103), Some(&String::from("It's software that makes a fast machine slow")));
     }
 
     #[test]
