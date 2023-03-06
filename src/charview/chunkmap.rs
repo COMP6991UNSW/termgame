@@ -1,7 +1,7 @@
 #![warn(missing_docs)]
 
 use divrem::DivFloor;
-use std::collections::HashMap;
+use std::{array, collections::HashMap};
 
 /// Chunks in the ChunkMap are always `CHUNK_SIZE x CHUNK_SIZE`.
 ///
@@ -68,9 +68,12 @@ impl<T: Clone> ChunkMap<T> {
     /// must create it.
     fn get_slot(&mut self, x: i32, y: i32) -> &mut Option<T> {
         let coord = ChunkCoordinate::get_from_coordinates(x, y);
-        &mut self.map.entry(coord).or_insert_with(
-            || array_macro::array![array_macro::array![None; CHUNK_SIZE]; CHUNK_SIZE],
-        )[coord.x_offset(x)][coord.y_offset(y)]
+        &mut self.map.entry(coord).or_insert_with(|| Self::empty_chunk())[coord.x_offset(x)]
+            [coord.y_offset(y)]
+    }
+
+    fn empty_chunk() -> [[Option<T>; CHUNK_SIZE]; CHUNK_SIZE] {
+        array::from_fn(|_| array::from_fn(|_| None))
     }
 
     /// Returns an Optional reference to the `T` at `(x, y)` if there
@@ -137,10 +140,26 @@ mod tests {
     #[test]
     fn get_some_string_chunkmap() {
         let mut c = ChunkMap::<String>::new();
-        c.insert(3, 3, String::from("It is hardware that makes a machine fast"));
-        assert_eq!(c.get(3, 3), Some(&String::from("It is hardware that makes a machine fast")));
-        c.insert(103, 103, String::from("It's software that makes a fast machine slow"));
-        assert_eq!(c.get(103, 103), Some(&String::from("It's software that makes a fast machine slow")));
+        c.insert(
+            3,
+            3,
+            String::from("It is hardware that makes a machine fast"),
+        );
+        assert_eq!(
+            c.get(3, 3),
+            Some(&String::from("It is hardware that makes a machine fast"))
+        );
+        c.insert(
+            103,
+            103,
+            String::from("It's software that makes a fast machine slow"),
+        );
+        assert_eq!(
+            c.get(103, 103),
+            Some(&String::from(
+                "It's software that makes a fast machine slow"
+            ))
+        );
     }
 
     #[test]
