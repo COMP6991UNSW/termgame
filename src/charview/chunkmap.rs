@@ -68,8 +68,9 @@ impl<T: Clone> ChunkMap<T> {
     /// must create it.
     fn get_slot(&mut self, x: i32, y: i32) -> &mut Option<T> {
         let coord = ChunkCoordinate::get_from_coordinates(x, y);
-        &mut self.map.entry(coord).or_insert_with(|| Self::empty_chunk())[coord.x_offset(x)]
-            [coord.y_offset(y)]
+        &mut self.map.entry(coord).or_insert_with(
+            || Self::empty_chunk()
+        )[coord.x_offset(x)][coord.y_offset(y)]
     }
 
     fn empty_chunk() -> [[Option<T>; CHUNK_SIZE]; CHUNK_SIZE] {
