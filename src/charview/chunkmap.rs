@@ -1,13 +1,13 @@
 #![warn(missing_docs)]
 
 use divrem::DivFloor;
-use std::collections::HashMap;
+use std::{array, collections::HashMap};
 
 /// Chunks in the ChunkMap are always `CHUNK_SIZE x CHUNK_SIZE`.
 ///
 /// Larger chunk sizes mean more memory is used; but also mean
 /// less lookups of the HashMap.
-const CHUNK_SIZE: usize = 64;
+const CHUNK_SIZE: usize = 32;
 const CHUNK_SIZE_I32: i32 = CHUNK_SIZE as i32;
 
 type Chunk<T> = [[T; CHUNK_SIZE]; CHUNK_SIZE];
@@ -50,11 +50,11 @@ impl ChunkCoordinate {
 /// and individual elements are accessed by finding the address
 /// of their chunk, then getting them by offset.
 #[derive(Debug, Clone)]
-pub struct ChunkMap<T: Copy> {
+pub struct ChunkMap<T> {
     map: HashMap<ChunkCoordinate, Chunk<Option<T>>>,
 }
 
-impl<T: Copy> ChunkMap<T> {
+impl<T: Clone> ChunkMap<T> {
     /// Creates a new [`ChunkMap`]
     pub fn new() -> ChunkMap<T> {
         ChunkMap {
@@ -68,11 +68,13 @@ impl<T: Copy> ChunkMap<T> {
     /// must create it.
     fn get_slot(&mut self, x: i32, y: i32) -> &mut Option<T> {
         let coord = ChunkCoordinate::get_from_coordinates(x, y);
-        &mut self
-            .map
-            .entry(coord)
-            .or_insert_with(|| [[None; CHUNK_SIZE]; CHUNK_SIZE])[coord.x_offset(x)]
-            [coord.y_offset(y)]
+        &mut self.map.entry(coord).or_insert_with(
+            || Self::empty_chunk()
+        )[coord.x_offset(x)][coord.y_offset(y)]
+    }
+
+    fn empty_chunk() -> [[Option<T>; CHUNK_SIZE]; CHUNK_SIZE] {
+        array::from_fn(|_| array::from_fn(|_| None))
     }
 
     /// Returns an Optional reference to the `T` at `(x, y)` if there
@@ -122,6 +124,12 @@ mod tests {
     }
 
     #[test]
+    fn get_none_string_chunkmap() {
+        let c = ChunkMap::<String>::new();
+        assert_eq!(c.get(0, 0), None);
+    }
+
+    #[test]
     fn get_some_chunkmap() {
         let mut c = ChunkMap::<i32>::new();
         c.insert(3, 3, 7);
@@ -129,6 +137,32 @@ mod tests {
         c.insert(103, 103, 7);
         assert_eq!(c.get(103, 103), Some(&7));
     }
+
+    #[test]
+    fn get_some_string_chunkmap() {
+        let mut c = ChunkMap::<String>::new();
+        c.insert(
+            3,
+            3,
+            String::from("It is hardware that makes a machine fast"),
+        );
+        assert_eq!(
+            c.get(3, 3),
+            Some(&String::from("It is hardware that makes a machine fast"))
+        );
+        c.insert(
+            103,
+            103,
+            String::from("It's software that makes a fast machine slow"),
+        );
+        assert_eq!(
+            c.get(103, 103),
+            Some(&String::from(
+                "It's software that makes a fast machine slow"
+            ))
+        );
+    }
+
     #[test]
     fn check_chunkmap_default() {
         let mut c = ChunkMap::<i32>::new();
