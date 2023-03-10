@@ -13,6 +13,7 @@ pub use super::{Message, SCREEN_HEIGHT, SCREEN_WIDTH};
 pub use crate::styled_characters::{Style as GameStyle, StyledCharacter};
 
 /// This is an enum to make it easy to match on events.
+#[derive(Debug, PartialOrd, Clone, PartialEq, Eq, Hash)]
 pub enum SimpleEvent {
     /// This happens when the user holds Control
     WithControl(KeyCode),
