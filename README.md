@@ -39,9 +39,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut controller = MyGame {};
 
     run_game(
-	      &mut controller,
-		    GameSettings::new().tick_duration(Duration::from_millis(500))
-	  )?;
+        &mut controller,
+        GameSettings::new().tick_duration(Duration::from_millis(500))
+    )?;
 
     println!("Game Ended!");
 
