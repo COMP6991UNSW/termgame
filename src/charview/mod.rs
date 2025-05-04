@@ -1,6 +1,6 @@
 #![warn(missing_docs)]
 
-use tui::{
+use ratatui::{
     buffer::Buffer,
     layout::Rect,
     widgets::{Block, Widget},
@@ -88,7 +88,7 @@ impl<'a> CharView<'a> {
     }
 }
 
-impl<'a> Widget for CharView<'a> {
+impl Widget for CharView<'_> {
     fn render(mut self, area: Rect, buf: &mut Buffer) {
         let charview_area = match self.block.take() {
             Some(b) => {
@@ -108,9 +108,10 @@ impl<'a> Widget for CharView<'a> {
                 let shifted_y: i32 = (y - charview_area.top()) as i32 + self.viewport.y;
 
                 if let Some(screen_character) = self.data.get(shifted_x, shifted_y) {
-                    buf.get_mut(x, y)
-                        .set_char(screen_character.c)
-                        .set_style((*screen_character).style.unwrap_or_default());
+                    if let Some(cell) = buf.cell_mut((x, y)) {
+                        cell.set_char(screen_character.c);
+                        cell.set_style(screen_character.style.unwrap_or_default());
+                    }
                 }
             }
         }

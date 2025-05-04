@@ -6,13 +6,12 @@ to write TUI games.
 Mainly used in COMP6991 at the University of New South Wales,
 the crate provides the [`Controller`] trait, which is accepted
 by the [`run_game`] function to start a game using a Crossterm
-TUI (provided by tui-rs).
+TUI (provided by ratatui).
 
 It also wraps many tui features, like [`StyledCharacter`],
-[`GameEvent`], and [`Style`]
+[`GameEvent`], and [`Style`].
 
 ```rust
-
 use termgame::{SimpleEvent, Controller, Game, GameEvent, StyledCharacter, run_game, KeyCode};
 use std::error::Error;
 use std::time::Duration;
@@ -39,7 +38,10 @@ impl Controller for MyGame {
 fn main() -> Result<(), Box<dyn Error>> {
     let mut controller = MyGame {};
 
-    // run_game(&mut controller, Duration::from_millis(500))?;
+    run_game(
+	      &mut controller,
+		    GameSettings::new().tick_duration(Duration::from_millis(500))
+	  )?;
 
     println!("Game Ended!");
 
