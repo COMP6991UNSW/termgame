@@ -1,7 +1,7 @@
 #![warn(missing_docs)]
 
+use ratatui::style::Style;
 use std::default::Default;
-use tui::style::Style;
 
 #[derive(Debug, Clone, Default, Copy)]
 /// A `ScreenCharacter` is a character that will be displayed

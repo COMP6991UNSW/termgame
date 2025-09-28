@@ -28,3 +28,22 @@ impl Message {
         self
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::Message;
+
+    #[test]
+    fn test_message() {
+        let m = Message::new(String::from("Hello"));
+        assert_eq!(m.text, "Hello");
+        assert_eq!(m.title, None);
+    }
+
+    #[test]
+    fn test_message_with_title() {
+        let m = Message::new(String::from("Hello")).title(String::from("Title"));
+        assert_eq!(m.text, "Hello");
+        assert_eq!(m.title, Some(String::from("Title")));
+    }
+}

@@ -1,12 +1,7 @@
 use super::charview::screen_character::ScreenCharacter;
-use tui::style::Style as TuiStyle;
+use ratatui::style::Style as TuiStyle;
 
-pub use super::charview::{CharChunkMap, ViewportLocation};
-pub use tui::style::{Color as GameColor, Modifier as Font};
-
-pub use crossterm::event::KeyCode as GameEvent;
-
-pub use super::{Message, SCREEN_HEIGHT, SCREEN_WIDTH};
+pub use ratatui::style::{Color as GameColor, Modifier as Font};
 
 /// This struct models how to show a character in Termgame.
 ///
@@ -27,6 +22,12 @@ pub struct Style {
     pub background_color: Option<GameColor>,
     /// See [`Font`] for details, it decides bold/italic/underline/etc.
     pub font: Option<Font>,
+}
+
+impl Default for Style {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl Style {
@@ -106,7 +107,7 @@ impl From<StyledCharacter> for ScreenCharacter {
                     fg: s.color,
                     bg: s.background_color,
                     add_modifier: s.font.unwrap_or(Font::empty()),
-                    sub_modifier: Font::empty(),
+                    ..Default::default()
                 }),
             },
             None => ScreenCharacter {
@@ -133,5 +134,33 @@ impl From<ScreenCharacter> for StyledCharacter {
                 style: None,
             },
         }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_styled_character() {
+        let sc = StyledCharacter::new('x').style(Style::new().color(Some(GameColor::Red)));
+        assert_eq!(sc.c, 'x');
+        assert_eq!(sc.style.unwrap().color, Some(GameColor::Red));
+    }
+
+    #[test]
+    fn test_screen_character() {
+        let sc = ScreenCharacter::from(StyledCharacter::new('x'));
+        assert_eq!(sc.c, 'x');
+        assert_eq!(sc.style, None);
+    }
+
+    #[test]
+    fn test_screen_character_with_style() {
+        let sc = ScreenCharacter::from(
+            StyledCharacter::new('x').style(Style::new().color(Some(GameColor::Red))),
+        );
+        assert_eq!(sc.c, 'x');
+        assert_eq!(sc.style.unwrap().fg, Some(GameColor::Red));
     }
 }

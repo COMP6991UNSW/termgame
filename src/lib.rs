@@ -5,7 +5,7 @@
 //! Mainly used in COMP6991 at the University of New South Wales,
 //! the crate provides the [`Controller`] trait, which is accepted
 //! by the [`run_game`] function to start a game using a Crossterm
-//! TUI (provided by tui-rs).
+//! TUI (provided by ratatui).
 //!
 //! It also wraps many tui features, like [`StyledCharacter`],
 //! [`GameEvent`], and [`GameStyle`]
@@ -53,21 +53,21 @@
 //! ```
 
 use crossterm::{
-    event::{self, poll, DisableMouseCapture, EnableMouseCapture, Event},
+    event::{self, DisableMouseCapture, EnableMouseCapture, Event, poll},
     execute,
-    terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
+    terminal::{EnterAlternateScreen, LeaveAlternateScreen, disable_raw_mode, enable_raw_mode},
+};
+use ratatui::{
+    Frame, Terminal,
+    backend::{Backend, CrosstermBackend},
+    layout::{Alignment, Constraint, Direction, Layout},
+    style::{Modifier, Style},
+    text::{Line, Span},
+    widgets::{Block, Borders, Paragraph, Wrap},
 };
 use std::{
     io,
     time::{Duration, Instant},
-};
-use tui::{
-    backend::{Backend, CrosstermBackend},
-    layout::{Alignment, Constraint, Direction, Layout},
-    style::{Modifier, Style},
-    text::{Span, Spans},
-    widgets::{Block, Borders, Paragraph, Wrap},
-    Frame, Terminal,
 };
 
 mod charview;
@@ -84,9 +84,9 @@ pub use game::{
 };
 pub use game_error::GameError;
 pub use message::Message;
-pub use tui::style::Modifier as Font;
+pub use ratatui::style::Modifier as Font;
 
-pub use charview::{chunkmap::ChunkMap, CharChunkMap, CharView};
+pub use charview::{CharChunkMap, CharView, chunkmap::ChunkMap};
 
 /// The required screen height termgame can play at.
 /// Set to the size of a standard vt100
@@ -208,7 +208,7 @@ fn run_gameloop<B: Backend>(
 }
 
 /// Creates a block for the [`ui`] function, with the given title.
-fn create_block(title: Option<String>) -> tui::widgets::Block<'static> {
+fn create_block(title: Option<String>) -> ratatui::widgets::Block<'static> {
     Block::default()
         .borders(Borders::ALL)
         .style(Style::default().bg(GameColor::White).fg(GameColor::Black))
@@ -219,59 +219,62 @@ fn create_block(title: Option<String>) -> tui::widgets::Block<'static> {
 }
 
 /// Creates the UI for a particular level.
-fn ui<B: Backend>(f: &mut Frame<B>, game: &Game) {
-    if f.size().height < SCREEN_HEIGHT || f.size().width < SCREEN_WIDTH {
-        let text = vec![Spans::from(Span::styled(
+fn ui(f: &mut Frame, game: &Game) {
+    let size = f.area();
+
+    if size.height < SCREEN_HEIGHT || size.width < SCREEN_WIDTH {
+        let text = vec![Line::from(Span::styled(
             format!("cs6991's Explorer requires a {SCREEN_HEIGHT}x{SCREEN_WIDTH} terminal!"),
             Style::default().fg(GameColor::Red),
         ))];
+
         let paragraph = Paragraph::new(text)
             .block(Block::default().title("Error").borders(Borders::ALL))
             .style(Style::default().bg(GameColor::Black))
             .alignment(Alignment::Center)
             .wrap(Wrap { trim: true });
-        f.render_widget(paragraph, f.size());
-    } else {
-        let size = f.size();
 
-        let (width, (main_height, msg_height)) = game.screen_size();
+        f.render_widget(paragraph, size);
+        return;
+    }
 
-        let chunks = Layout::default()
-            .direction(Direction::Horizontal)
-            .constraints(
-                [
-                    Constraint::Length(size.width.saturating_sub(SCREEN_WIDTH) / 2),
-                    Constraint::Length(width),
-                    Constraint::Length(size.width.saturating_sub(SCREEN_WIDTH) / 2),
-                ]
-                .as_ref(),
-            )
-            .split(size);
+    let (width, (main_height, msg_height)) = game.screen_size();
 
-        let chunks = Layout::default()
-            .direction(Direction::Vertical)
-            .constraints(
-                [
-                    Constraint::Length(size.height.saturating_sub(SCREEN_HEIGHT) / 2),
-                    Constraint::Length(main_height),
-                    Constraint::Length(msg_height),
-                    Constraint::Length(size.height.saturating_sub(SCREEN_HEIGHT) / 2),
-                ]
-                .as_ref(),
-            )
-            .split(chunks[1]);
+    let chunks = Layout::default()
+        .direction(Direction::Horizontal)
+        .constraints(
+            [
+                Constraint::Length(size.width.saturating_sub(SCREEN_WIDTH) / 2),
+                Constraint::Length(width),
+                Constraint::Length(size.width.saturating_sub(SCREEN_WIDTH) / 2),
+            ]
+            .as_ref(),
+        )
+        .split(size);
 
-        let charview = CharView::new(game.chunks)
-            .viewport(game.get_viewport())
-            .block(Block::default().borders(Borders::ALL));
-        f.render_widget(charview, chunks[1]);
+    let chunks = Layout::default()
+        .direction(Direction::Vertical)
+        .constraints(
+            [
+                Constraint::Length(size.height.saturating_sub(SCREEN_HEIGHT) / 2),
+                Constraint::Length(main_height),
+                Constraint::Length(msg_height),
+                Constraint::Length(size.height.saturating_sub(SCREEN_HEIGHT) / 2),
+            ]
+            .as_ref(),
+        )
+        .split(chunks[1]);
 
-        if let Some(msg) = game.get_message() {
-            let paragraph = Paragraph::new(msg.text.clone().replace('\t', "  "))
-                .style(Style::default().bg(GameColor::White).fg(GameColor::Black))
-                .block(create_block(msg.title.clone()))
-                .alignment(Alignment::Left);
-            f.render_widget(paragraph, chunks[2]);
-        }
+    let charview = CharView::new(game.chunks)
+        .viewport(game.get_viewport())
+        .block(Block::default().borders(Borders::ALL));
+    f.render_widget(charview, chunks[1]);
+
+    if let Some(msg) = game.get_message() {
+        let paragraph = Paragraph::new(msg.text.clone().replace('\t', "  "))
+            .style(Style::default().bg(GameColor::White).fg(GameColor::Black))
+            .block(create_block(msg.title.clone()))
+            .alignment(Alignment::Left);
+        f.render_widget(paragraph, chunks[2]);
     }
 }

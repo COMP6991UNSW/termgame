@@ -2,7 +2,7 @@
 use super::charview::screen_character::ScreenCharacter;
 
 pub use super::charview::{CharChunkMap, ViewportLocation};
-pub use tui::style::{Color, Modifier as Font};
+pub use ratatui::style::Color;
 
 pub use crossterm::event::{
     Event as GameEvent, KeyCode, KeyEvent, KeyEventKind, KeyEventState, KeyModifiers, MouseEvent,
@@ -53,7 +53,7 @@ impl From<GameEvent> for SimpleEvent {
                 KeyModifiers::NONE => SimpleEvent::Just(code),
                 _ => unreachable!(),
             },
-            e => return SimpleEvent::ComplexEvent(e),
+            e => SimpleEvent::ComplexEvent(e),
         }
     }
 }
@@ -71,7 +71,7 @@ pub struct Game<'a> {
     pub(super) chunks: &'a mut CharChunkMap,
 }
 
-impl<'a> Game<'a> {
+impl Game<'_> {
     /// Create a game, given a [`CharChunkMap`].
     pub fn new(chunks: &mut CharChunkMap) -> Game {
         Game {
